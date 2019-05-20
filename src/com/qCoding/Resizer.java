@@ -4,20 +4,12 @@ import edu.princeton.cs.algs4.Picture;
 import java.awt.*;
 import java.util.*;
 
-
-interface ILogger {
-    void writeToLog(String s);
-}
-
-
-public class Resizer {
+class Resizer {
     private static ThreadHolder th;
     private int[][] colors;
     private int[][] Energy;
-    private ILogger logger;
 
-    Resizer(Picture picture, ILogger logger) {
-        this.logger = logger;
+    Resizer(Picture picture) {
         if (picture == null) throw new NullPointerException();
         colors = new int[picture.width()][picture.height()];
         Energy = new int[picture.width()][picture.height()];
@@ -35,19 +27,18 @@ public class Resizer {
         int green = (green(pix1) + (green(pix2))) / 2;
         green = green << 8;
         int blue = (blue(pix1) + blue(pix2)) / 2;
-        int finalPix = red + green + blue;
-        return finalPix;
+        return red + green + blue;
     }
 
-    private void TESTaddHorizontalSeam(int desHeight){
+    private void addHorizontalSeam(int desHeight){
         this.colors = transpose(this.colors);
         this.Energy = transpose(this.Energy);
-        TESTaddVerticalSeam(desHeight);
+        addVerticalSeam(desHeight);
         this.colors = transpose(this.colors);
         this.Energy = transpose(this.Energy);
     }
 
-    private void TESTaddVerticalSeam(int desWidth) {
+    private void addVerticalSeam(int desWidth) {
         // num = number vert seams width++
 
         int num = desWidth - width();
@@ -56,7 +47,7 @@ public class Resizer {
         num = num/times;
         System.out.println("Num: " + num + " times: " + times);
         for(int time = 0; time < times;time ++){
-            int seam[][] = TESTfindVerticalSeam(num);
+            int seam[][] = findVerticalSeam(num);
             int leftpix; //left pixel to be inserted
             int rightpix; // right one
             int tmp1, tmp2;
@@ -118,10 +109,6 @@ public class Resizer {
         return picture;
     }
 
-    private int getRGB(int x, int y) {
-        return colors[x][y];
-    }
-
     private int width() {
         return this.colors.length;
     }
@@ -130,99 +117,19 @@ public class Resizer {
         return this.colors[0].length;
     }
 
-    private int energy(int x, int y) {
-//        if (x < 0 || x > this.width() - 1 || y < 0 || y > this.height() - 1) {
-//            throw new IndexOutOfBoundsException();
-//        }
-        if (x == 0 || x == this.width() - 1 || y == 0 || y == this.height() - 1) {
-            return 1000000;
-        } else {
-            int deltaXRed = red(colors[x - 1][y]) -
-                    red(colors[x + 1][y]);
-            int deltaXGreen = green(colors[x - 1][y]) -
-                    green(colors[x + 1][y]);
-            int deltaXBlue = blue(colors[x - 1][y]) -
-                    blue(colors[x + 1][y]);
-
-            int deltaYRed = red(colors[x][y - 1]) - red(colors[x][y + 1]);
-            int deltaYGreen = green(colors[x][y - 1]) - green(colors[x][y + 1]);
-            int deltaYBlue = blue(colors[x][y - 1]) - blue(colors[x][y + 1]);
-
-            return deltaXRed * deltaXRed + deltaXBlue * deltaXBlue + deltaXGreen * deltaXGreen + deltaYRed * deltaYRed + deltaYBlue * deltaYBlue + deltaYGreen * deltaYGreen;
-        }
-    }
-
-    private int[] findHorizontalSeam() {
-        this.colors = transpose(this.colors);
-        int[] seam = findVerticalSeam();
-        this.colors = transpose(this.colors);
-        return seam;
-    }
-
-    private int[] findVerticalSeam() {
-        int n = this.width() * this.height();
-        int[] seam = new int[this.height()];
-        int[] nodeTo = new int[n];
-        int[] distTo = new int[n];
-        for (int i = 0; i < n; i++) {
-            if (i < width())
-                distTo[i] = 0;
-            else
-                distTo[i] = Integer.MAX_VALUE;
-        }
-        int index = 0;
-        int min = Integer.MAX_VALUE;
-        for (int i = 0; i < height(); i++) {
-            for (int j = 0; j < width(); j++) {
-                int energ = energy(j, i);
-                int ind2 = index(j, i);
-                int value = distTo[ind2] + energ;
-                for (int k = -1; k <= 1; k++) {
-                    if (!(j + k < 0 || j + k > this.width() - 1 || i + 1 > this.height() - 1)) {
-                        int ind = index(j + k, i + 1);
-                        if (distTo[ind] > value) {
-                            distTo[ind] = value;
-                            nodeTo[ind] = ind2;
-                        }
-                    }
-                }
-                if (i == height() - 1) {
-                    // find min dist in the last row
-                    if (distTo[j + width() * (height() - 1)] < min) {
-                        index = j + width() * (height() - 1);
-                        min = distTo[j + width() * (height() - 1)];
-                    }
-                }
-            }
-
-        }
-
-        // find seam one by one
-        for (int j = 0; j < height(); j++) {
-            int y = height() - j - 1;
-            int x = index - y * width();
-            seam[height() - 1 - j] = x;
-            index = nodeTo[index];
-        }
-
-        return seam;
-    }
-
-    private int[][] TESTfindHorizontalSeam(int mult) {
+    private int[][] findHorizontalSeam(int mult) {
         this.colors = transpose(this.colors);
         this.Energy = transpose(this.Energy);
-        int[][] seam = TESTfindVerticalSeam(mult);
+        int[][] seam = findVerticalSeam(mult);
         this.colors = transpose(this.colors);
         this.Energy = transpose(this.Energy);
         return seam;
     }
 
-    private int[][] TESTfindVerticalSeam(int mult) {
+    private int[][] findVerticalSeam(int mult) {
         int n = this.width() * this.height();
         int[][] seam = new int[this.height()][mult];
-//        calcEnergy();
         th.calculateEnergy(this.colors, this.Energy);
-        // ENERGY(pixel) == -1 <=> pixel is blocked!!!
         for (int curSeam = 0; curSeam < mult; curSeam++) {
             int[] nodeTo = new int[n];
             int[] distTo = new int[n];
@@ -238,24 +145,6 @@ public class Resizer {
 
             }
             th.calculateCostTable(this.colors, this.Energy, distTo, nodeTo);
-
-//            for(int j = height() - 2; j >= 0;j--){
-//                for(int i = 0; i < width();i++){
-//                    if(Energy[i][j] == -1) continue;
-//                    int ind = index(i, j);
-//                    for (int k = -1; k <= 1; k++) {
-//                        // [i + k][j - 1]
-//                        if(i + k >= 0 && i + k < width() && j + 1 < height() && Energy[i + k][j + 1] != -1){
-//                            int indTO = index(i + k, j + 1);
-//                            if(distTo[indTO] == Integer.MAX_VALUE) continue;
-//                            if(distTo[indTO] + Energy[i][j] < distTo[ind]){
-//                                distTo[ind] = distTo[indTO] + Energy[i][j];
-//                                nodeTo[ind] = indTO;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
 
             // find min dist in the bottom row
             for (int i = 0; i < width(); i++) {
@@ -280,35 +169,8 @@ public class Resizer {
         return seam;
     }
 
-    private void removeHorizontalSeam(int[] seam) {
-//        if (height() <= 1) throw new IllegalArgumentException();
-//        if (seam == null) throw new NullPointerException();
-//        if (seam.length != width()) throw new IllegalArgumentException();
-//
-//        for (int i = 0; i < seam.length; i++) {
-//            if (seam[i] < 0 || seam[i] > height() - 1)
-//                throw new IllegalArgumentException();
-//            if (i < width() - 1 && Math.pow(seam[i] - seam[i + 1], 2) > 1)
-//                throw new IllegalArgumentException();
-//        }
-
-        int[][] updatedColor = new int[width()][height() - 1];
-        for (int i = 0; i < seam.length; i++) { // seam.length = width
-            if (seam[i] == 0) {
-                System.arraycopy(this.colors[i], 1, updatedColor[i], 0, height() - 1);
-            } else if (seam[i] == height() - 1) {
-                System.arraycopy(this.colors[i], 0, updatedColor[i], 0, height() - 1);
-            } else {
-                System.arraycopy(this.colors[i], 0, updatedColor[i], 0, seam[i]);
-                System.arraycopy(this.colors[i], seam[i] + 1, updatedColor[i], seam[i], height() - seam[i] - 1);
-            }
-        }
-        this.colors = updatedColor;
-    }
-
-    private void TESTremoveHorizontalSeam(int[][] seam, int mult) {
+    private void removeHorizontalSeam(int[][] seam, int mult) {
         int[][] updColor = new int[width()][height() - mult];
-        // seam[width][mult]
         for (int i = 0; i < seam.length; i++) { // seam.length cycle (i < seam.length)
             // height cycle
             int[] col = new int[mult];
@@ -331,18 +193,6 @@ public class Resizer {
         this.colors = updColor;
     }
 
-    private void removeVerticalSeam(int[] seam) {
-        this.colors = transpose(this.colors);
-        removeHorizontalSeam(seam);
-        this.colors = transpose(this.colors);
-    }
-
-    public void TESTremoveVerticalSeam(int[][] seam, int mult) {
-        this.colors = transpose(this.colors);
-        TESTremoveHorizontalSeam(seam, mult);
-        this.colors = transpose(this.colors);
-    }
-
     private int red(int rgb) {
         return (rgb >> 16) & 0xFF;
     }
@@ -360,8 +210,6 @@ public class Resizer {
     }
 
     private int[][] transpose(int[][] origin) {
-//        if (origin == null) throw new NullPointerException();
-//        if (origin.length < 1) throw new IllegalArgumentException();
         int[][] result = new int[origin[0].length][origin.length];
         for (int i = 0; i < origin[0].length; i++) {
             for (int j = 0; j < origin.length; j++) {
@@ -371,7 +219,7 @@ public class Resizer {
         return result;
     }
 
-    private void TESTnormalMode(int desWidth, int desHeight) { // doing sqrt(times) seams at one time
+    private void normalMode(int desWidth, int desHeight) { // doing sqrt(times) seams at one time
 
         if(desWidth < width()){
             int times = width() - desWidth;
@@ -381,8 +229,8 @@ public class Resizer {
             this.Energy = this.transpose(this.Energy);
             for (int i = 0; i < times; i++) {
                 if (i % 10 == 0) System.out.println(i);
-                int[][] seam = this.TESTfindHorizontalSeam(mult);
-                this.TESTremoveHorizontalSeam(seam, mult);
+                int[][] seam = this.findHorizontalSeam(mult);
+                this.removeHorizontalSeam(seam, mult);
             }
             this.colors = this.transpose(this.colors);
             this.Energy = this.transpose(this.Energy);
@@ -394,8 +242,8 @@ public class Resizer {
             times = times / mult;
             for (int i = 0; i < times; i++) {
                 if (i % 10 == 0) System.out.println(i);
-                int[][] seam = this.TESTfindHorizontalSeam(mult);
-                this.TESTremoveHorizontalSeam(seam, mult);
+                int[][] seam = this.findHorizontalSeam(mult);
+                this.removeHorizontalSeam(seam, mult);
             }
         }
         // saving picture :
@@ -404,24 +252,23 @@ public class Resizer {
 
     Picture RUN(int desWidth, int desHeight){
         th = new ThreadHolder();
-//        TESTnormalMode(desWidth,desHeight);
         if(desWidth != width()){
             if(desWidth > width()){
                 // extend
-                TESTaddVerticalSeam(desWidth);
+                addVerticalSeam(desWidth);
             }else{
                 // crop: remove vert seams
-                TESTnormalMode(desWidth,height());
+                normalMode(desWidth,height());
             }
         }
         if(desHeight != height()){
             if(desHeight > height()){
                 // extend
-                TESTaddHorizontalSeam(desHeight);
+                addHorizontalSeam(desHeight);
 
             }else{
                 // crop: remove horizontal seams
-                TESTnormalMode(width(), desHeight);
+                normalMode(width(), desHeight);
             }
         }
         th.shutDown();

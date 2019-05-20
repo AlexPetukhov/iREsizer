@@ -2,23 +2,22 @@ package com.qCoding;
 
 import java.util.concurrent.*;
 
-public class ThreadHolder {
-    int cores;
-    TaskEnergy[] tasks;
-    TaskMinCost[] costs;
-    int[][] colors;
-    int[][] energy;
-    int[] distTo;
-    int[] nodeTo;
-    ExecutorService execEnergy;
-    ExecutorService execMin;
-    CyclicBarrier cb;
+class ThreadHolder {
+    private int cores;
+    private TaskEnergy[] tasks;
+    private TaskMinCost[] costs;
+    private  int[][] colors;
+    private int[][] energy;
+    private int[] distTo;
+    private int[] nodeTo;
+    private ExecutorService execEnergy;
+    private ExecutorService execMin;
+    private CyclicBarrier cb;
     private CountDownLatch countDownLatch;
     private CountDownLatch countDownLatch1;
 
-    public ThreadHolder() {
+    ThreadHolder() {
         cores = Runtime.getRuntime().availableProcessors();
-//        System.out.println("CORES: " + cores);
         execEnergy = Executors.newFixedThreadPool(cores);
         execMin = Executors.newFixedThreadPool(cores);
         tasks = new TaskEnergy[cores];
@@ -64,6 +63,7 @@ public class ThreadHolder {
         try {
             countDownLatch.await();
         } catch (InterruptedException e) {
+
         }
     }
 
@@ -82,6 +82,7 @@ public class ThreadHolder {
         try {
             countDownLatch1.await();
         } catch (InterruptedException e) {
+
         }
     }
 

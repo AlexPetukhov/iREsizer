@@ -7,14 +7,14 @@ import java.util.concurrent.CyclicBarrier;
 public class TaskMinCost implements Runnable {
     private int upperBound;
     private int lowerBound;
-    int[][] colors;
-    int[][] energy;
-    int[] nodeTo;
-    int[] distTo;
-    CyclicBarrier cb;
+    private int[][] colors;
+    private int[][] energy;
+    private int[] nodeTo;
+    private int[] distTo;
+    private CyclicBarrier cb;
     private CountDownLatch countDownLatch;
 
-    public TaskMinCost(int[][] colors, int[][] energy, int[] nodeTo, int[] distTo, CyclicBarrier cb, CountDownLatch countDownLatch) {
+    TaskMinCost(int[][] colors, int[][] energy, int[] nodeTo, int[] distTo, CyclicBarrier cb, CountDownLatch countDownLatch) {
         this.colors = colors;
         this.energy = energy;
         this.nodeTo = nodeTo;
@@ -24,11 +24,11 @@ public class TaskMinCost implements Runnable {
 
     }
 
-    public void setUpperBound(int _upperBound) {
+    void setUpperBound(int _upperBound) {
         upperBound = _upperBound;
     }
 
-    public void setLowerBound(int _lowerBound) {
+    void setLowerBound(int _lowerBound) {
         lowerBound = _lowerBound;
     }
 
@@ -36,11 +36,11 @@ public class TaskMinCost implements Runnable {
         return width() * y + x;
     }
 
-    public int width() {
+    private int width() {
         return this.colors.length;
     }
 
-    public int height() {
+    private int height() {
         return this.colors[0].length;
     }
 

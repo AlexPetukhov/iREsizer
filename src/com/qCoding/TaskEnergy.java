@@ -6,8 +6,8 @@ public class TaskEnergy implements Runnable {
     private Thread t;
     private int upperBound;
     private int lowerBound;
-    int[][] colors;
-    int[][] energy;
+    private int[][] colors;
+    private int[][] energy;
     private CountDownLatch countDownLatch;
 
     TaskEnergy(CountDownLatch cdl, int[][] colors, int[][] energy) {
@@ -16,15 +16,11 @@ public class TaskEnergy implements Runnable {
         this.energy = energy;
     }
 
-    public void setCountDownLatch(CountDownLatch cdl) {
-        countDownLatch = cdl;
-    }
-
-    public void setUpperBound(int _upperBound) {
+    void setUpperBound(int _upperBound) {
         upperBound = _upperBound;
     }
 
-    public void setLowerBound(int _lowerBound) {
+    void setLowerBound(int _lowerBound) {
         lowerBound = _lowerBound;
     }
 
@@ -37,7 +33,7 @@ public class TaskEnergy implements Runnable {
         countDownLatch.countDown();
     }
 
-    public int energyCalc(int x, int y) {
+    private int energyCalc(int x, int y) {
         if (x == 0 || x == this.width() - 1 || y == 0 || y == this.height() - 1) {
             return 1000000;
         } else {
@@ -66,7 +62,7 @@ public class TaskEnergy implements Runnable {
     }
 
     private int blue(int rgb) {
-        return (rgb >> 0) & 0xFF;
+        return (rgb) & 0xFF;
     }
 
     public void start(int[][] _colors, int[][] _energy) {
@@ -78,11 +74,11 @@ public class TaskEnergy implements Runnable {
         }
     }
 
-    public int width() {
+    private int width() {
         return this.colors.length;
     }
 
-    public int height() {
+    private int height() {
         return this.colors[0].length;
     }
 

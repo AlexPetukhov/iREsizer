@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.*;
 
-public class App extends JFrame implements ILogger{
+public class App extends JFrame{
     private String path;
     private int foundPic = 0;
     private JTextArea ta = new JTextArea();
@@ -192,7 +192,7 @@ public class App extends JFrame implements ILogger{
             ex.printStackTrace();
         }
         /* Turn off metal's use of bold fonts */
-//        UIManager.put("swing.boldMetal", Boolean.FALSE);
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
 
         //Schedule a job for the event dispatch thread:
         //creating and showing this application's GUI.
@@ -248,7 +248,7 @@ public class App extends JFrame implements ILogger{
                 System.out.println("Resize time : " + (System.nanoTime() - startTime) / 1000000000 + " seconds");
             }
         }
-        Resizer rszr = new Resizer(picture, this);
+        Resizer rszr = new Resizer(picture);
         Picture pic;
         pic = rszr.RUN(desWidth, desHeight);
 
@@ -280,7 +280,7 @@ public class App extends JFrame implements ILogger{
         return new ImageIcon(newImg);
     }
 
-    public void writeToLog(String s){
+    private void writeToLog(String s){
         ta.append(s + "\n");
     }
 
