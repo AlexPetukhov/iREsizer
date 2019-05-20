@@ -8,6 +8,7 @@ import javax.swing.filechooser.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.lang.*;
 
 public class App extends JFrame{
@@ -18,6 +19,7 @@ public class App extends JFrame{
     private int height = 0;
     private int desWidth = 0;
     private int desHeight = 0;
+    private File fl;
 
     private void addComponentToPane(Container pane) {
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -218,6 +220,7 @@ public class App extends JFrame{
             // picture is chosen
             System.out.println("You chose: " + fc.getSelectedFile().getAbsolutePath());
             path = fc.getSelectedFile().getAbsolutePath();
+            fl = fc.getSelectedFile();
             Picture pic = new Picture(path);
             width = pic.width();
             height = pic.height();
@@ -255,8 +258,8 @@ public class App extends JFrame{
         Picture pic;
         pic = rszr.RUN(desWidth, desHeight);
 
-        // saving picture
-        String dirPath = path.substring(0, path.lastIndexOf('/')); // ".../AppSwing"
+        String dirPath = fl.getParentFile().getAbsolutePath();
+//        dirPath = path.substring(0, path.lastIndexOf('/')); // ".../AppSwing"
         long time = System.nanoTime() / 10000000000L;
         String saveFilePath = dirPath + "/" + picName + time + "." + picType;
         pic.save(saveFilePath);
