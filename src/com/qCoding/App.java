@@ -26,7 +26,10 @@ public class App extends JFrame{
 
 // start picture tab
         JPanel picCard = new JPanel(new BorderLayout());
-        ImageIcon img = new ImageIcon("liza.jpg");
+        ImageIcon img = new ImageIcon("src/logo.png");
+        img = new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("logo.png")));
+
+
         JLabel comp = new JLabel(resize(img));
         JLabel tmp1 = new JLabel("Current image size: " + width + " x " + height + ".");
         JLabel tmp3 = new JLabel("Desired image size: " + desWidth + " x " + desHeight + ".");
@@ -155,8 +158,8 @@ public class App extends JFrame{
         panelLOG.add(clrLogBtn,BorderLayout.SOUTH);
 
         // adding all tabs to container
-        tabbedPane.addTab("Settings", sett);
         tabbedPane.addTab("Picture", picCard);
+        tabbedPane.addTab("Settings", sett);
         tabbedPane.addTab("LOG", panelLOG);
 
         pane.add(tabbedPane, BorderLayout.CENTER);
@@ -192,7 +195,7 @@ public class App extends JFrame{
             ex.printStackTrace();
         }
         /* Turn off metal's use of bold fonts */
-        UIManager.put("swing.boldMetal", Boolean.FALSE);
+//        UIManager.put("swing.boldMetal", Boolean.FALSE);
 
         //Schedule a job for the event dispatch thread:
         //creating and showing this application's GUI.
@@ -265,8 +268,8 @@ public class App extends JFrame{
     }
 
     private ImageIcon resize(ImageIcon ii){
+        if(ii.getIconHeight() == 400 && ii.getIconWidth() == 400)return ii;
         Image img = ii.getImage();
-
         Image newImg;
         if(width == 0 || height == 0){
             newImg = img.getScaledInstance(400,400,Image.SCALE_SMOOTH);
