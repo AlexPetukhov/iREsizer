@@ -1,0 +1,37 @@
+
+
+//        JPanel settCard = new JPanel(new BorderLayout());
+//
+//        JTextArea ta = new JTextArea();
+//        JButton reset = new JButton("Reset");
+//        JButton send = new JButton("Send");
+//        JTextField tf = new JTextField(15);
+//        JPanel panel = new JPanel();
+//
+//        ta.setLineWrap(true);
+//        ta.setWrapStyleWord(true);
+//        settCard.add(ta,BorderLayout.CENTER);
+//
+//        panel.add(tf, BorderLayout.SOUTH);
+//        panel.add(send, BorderLayout.SOUTH);
+//        panel.add(reset, BorderLayout.SOUTH);
+//
+//        settCard.add(panel, BorderLayout.SOUTH);
+//
+//        reset.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                ta.setText(null);
+//            }
+//        });
+//
+//        send.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                ta.append(tf.getText() + ". ");
+//            }
+//        });
+
+
+
+
